@@ -36,6 +36,9 @@ Essas "variáveis" são palavras que serão alteradas de acordo com o comando qu
 | ${file}  | Nome de um arquivo |
 | ${db}    | Nome do banco |
 | ${collection} | Nome da collection |
+| ${document} | BSON do documento |
+| ${field} | Campo do documento |
+| ${value} | Valor do documento |
 
 ## Comandos para iniciar o serviço do mongo
 
@@ -70,11 +73,18 @@ Exibe todos os bancos ativos:
 ```console
 > show dbs
 ```
+
 Mostra qual banco está selecionado no momento:
 Exibe todos os bancos ativos:
 ```console
 > db
 ```
+
+Exibe todas as *collections* ativas no banco selecionado:
+```console
+> show collections
+```
+
 Insere um documento no banco:
 ```console
 > db.${collection}.insert()
@@ -87,6 +97,19 @@ Ou
 Retorna os dados existentes na collection:
 ```console
 > db.${collection}.find()
+```
+> Dentro comando find pode ser passado campos, valores, filtros e [projections](https://www.mongodb.com/docs/manual/reference/operator/projection/positional/) de quais documentos queremos buscar,
+> no exemplo abaixo o banco retornará todos os documentos que possuem o campo "a" com o valor 123
+> 
+> [Link para documentação das querys no MongoDB](https://www.mongodb.com/docs/manual/tutorial/query-documents/)
+```console
+> db.${collection}.find({"a": 123})
+```
+
+Retorna apenas um registro:
+> Comando semelhante ao find() porém retorna o primeiro registro encontrado
+```console
+> db.${collection}.findOne()
 ```
 
 Formata o retorno dos dados existentes:
@@ -109,4 +132,19 @@ Insere um ou vários documentos:
 > os registros que estão corretos mesmo se algum deles não for cadastrado
 ```console
 > db.${collection}.insertMany([${document}, ${document}...], {ordered: false})
+```
+
+Altera o valor de um documento existente:
+```console
+> db.${collection}.replaceOne({ ${field}:${value} }, { ${field}:${value} })
+```
+
+Altera o valor de qualquer documento correspondente ao filtro:
+```console
+> db.${collection}.updateMany()
+```
+
+Altera o valor do primeiro documento encontrado correspondente ao filtro:
+```console
+> db.${collection}.updateOne()
 ```
