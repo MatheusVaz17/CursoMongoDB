@@ -1,3 +1,11 @@
+### HyperLinks
+
+- [Conceitos](#conceitos)
+- [Variáveis utilizadas nos comandos](#variáveis-utilizadas-nos-comandos)
+- [Comandos para iniciar o serviço do mongo](#comandos-para-iniciar-o-serviço-do-mongo)
+- [Comandos no Mongo Shell](#comandos-no-mongo-shell)
+- [Relacionamentos](#relacionamentos)
+
 ## Conceitos
 
  **Banco de dados não relacional** 
@@ -147,4 +155,188 @@ Altera o valor de qualquer documento correspondente ao filtro:
 Altera o valor do primeiro documento encontrado correspondente ao filtro:
 ```console
 > db.${collection}.updateOne()
+```
+
+Deleta o primeiro registro encontrado:
+```console
+> db.${collection}.deleteOne()
+```
+
+Deleta um ou vários registros encontrados:
+```console
+> db.${collection}.deleteMany()
+```
+
+## Relacionamentos
+
+**Embedded documents:**
+> Em MongoDB, documentos incorporados (Embedded documents) referem-se à capacidade de incluir documentos BSON dentro de outros documentos BSON.
+> Isso permite modelar dados de forma hierárquica e estruturada, simplificando consultas e operações de leitura e gravação. A principal
+> vantagem é reduzir a necessidade de consultas complexas e junções, melhorando o desempenho e simplificando a lógica de consulta do 
+> aplicativo. Além disso, documentos incorporados podem ser mais eficientes em termos de armazenamento e acesso em comparação com estruturas de
+> dados normalizadas.
+
+Exemplo de relacionamento "um para um" de um sistema de faculdade com embedded documents:
+
+Cllection Aluno
+```JSON
+{
+    "_id": 1,
+    "cpf": 123456798,
+    "nome": "Joãozinho",
+    "cidade": "São Paulo"
+}
+```
+Cllection Carteirinha
+```JSON
+{
+    "_id": 8,
+    "turma": "220A",
+    "ra": 1245,
+}
+```
+
+> Em bancos relacionais a normalização para o relacionamento desses dados seria criar uma coluna que ligue os dados da carteirinha com o aluno, por exemplo criar uma coluna "carteirinha_id" na tabela de aluno como 
+> chave estrangeira para a tabela de carteirinha, porém para buscar as informações de carteirinha do aluno teria que ser realizado um JOIN.
+> Em bancos não relacionais não é preciso criar um atributo para realizar o relacionamento, pois o uso de JOINS em consultas de banco resulta em uma perca de performance.
+> Nesse caso é utilizado *Embedded documents* para que a consulta retorne as informações da carteirinha do aluno dessa maneira:
+```JSON
+{
+    "_id": 1,
+    "cpf": 123456798,
+    "nome": "Joãozinho",
+    "cidade": "São Paulo",
+    "carteirinha": {
+        "_id": 8,
+        "turma": "220A",
+        "ra": 1245,
+    }
+}
+```
+
+**Relacionamento "muitos para muitos":**
+
+> Quando existe uma relação de "muitos para muitos", no banco relacional esse tipo de relação pode ser consultado através de uma tabela auxiliar que realiza a ligação entre as duas tabelas, porém no banco não 
+> relacional ao invés de criar uma *collection* para relacionar essas informações, pode ser adicionado um array dentro das *collections* que precisam do relacionamento, por exemplo:
+
+Collection Fornecedores
+```JSON
+{
+    "_id": "f04",
+    "cnpj": "165486984",
+    "nome": "Fornecedor Legal",
+    "cep": "1098465",
+    "produto_ids": ["p16", "p21"]
+}
+ 
+{
+    "_id": "f07",
+    "cnpj": "98498151",
+    "nome": "Fornecedor Maneiro",
+    "cep": "198498",
+    "produto_ids": ["p21", "p47"]
+}
+```
+
+Collection Produtos
+```JSON
+{
+    "_id": "p16",
+    "descricao": "Panela",
+    "preco": 45.50,
+    "fornecedor_ids": ["f04"]
+}
+ 
+{
+    "_id": "p21",
+    "descricao": "Prato",
+    "preco": 14,
+    "fornecedor_ids": ["f04", "f07"]
+} 
+ 
+{
+    "_id": "p47",
+    "descricao": "Faqueiro",
+    "preco": 127.46,
+    "fornecedor_ids": ["f07"]
+}
+```
+
+Se o fornecedor de algum dos produtos quiser alterar o preço do produto, pode retornar essas informações de preço do produto no relacionamento:
+
+Collection Fornecedores
+```JSON
+{
+    "_id": "f04",
+    "cnpj": "165486984",
+    "nome": "Fornecedor Legal",
+    "cep": "1098465",
+    "produtos": [
+        {
+            "_id": "p16",
+            "preco": 46.50
+        },
+        {
+            "_id": "p21",
+            "preco": 12
+        }
+    ]
+}
+ 
+{
+    "_id": "f07",
+    "cnpj": "98498151",
+    "nome": "Fornecedor Maneiro",
+    "cep": "198498",
+    "produtos": [
+        {
+            "_id": "p21",
+            "preco": 16
+        },
+        {
+            "_id": "p47",
+            "preco": 127.46
+        }
+    ]
+}
+```
+
+Collection Produtos:
+```JSON
+{
+    "_id": "p16",
+    "descricao": "Panela",
+    "fornecedores": [
+        {
+            "_id": "f04",
+            "preco": 46.50
+        }
+    ]
+}
+ 
+{
+    "_id": "p21",
+    "descricao": "Prato",
+    "fornecedores": [
+        {
+            "_id": "f04",
+            "preco": 12
+        },
+        {
+            "_id": "f07",
+            "preco": 16
+        }
+    ]
+} 
+ 
+{
+    "_id": "p47",
+    "descricao": "Faqueiro",
+    "fornecedores": [
+        {
+            "_id": "f07",
+            "preco": 127.46
+        }
+    ]
+}
 ```
