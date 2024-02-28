@@ -5,6 +5,7 @@
 - [Comandos para iniciar o serviço do mongo](#comandos-para-iniciar-o-serviço-do-mongo)
 - [Comandos no Mongo Shell](#comandos-no-mongo-shell)
 - [Relacionamentos](#relacionamentos)
+- [Queries](#queries)
 
 ## Conceitos
 
@@ -339,4 +340,60 @@ Collection Produtos:
         }
     ]
 }
+```
+
+## Queries
+
+**O que são queries?**
+
+> As queries de banco de dados são comandos ou instruções que você usa para interagir com um banco de dados. Elas permitem que você faça operações como buscar, inserir, atualizar ou excluir dados em um banco de dados. 
+> As queries são escritas em uma linguagem específica, no caso do mongoDB é utilizada a linguagem MQL (MongoDB Query Language), e são essenciais para recuperar informações específicas ou manipular dados de acordo com as necessidades do usuário ou da aplicação.
+
+**Exemplos de queries com Pokemon**
+
+Busca simples no banco para retornar o primeiro registro encontrado:
+```console
+> db.pokemon.findOne()
+```
+
+Busca simples no banco retornando apenas campos específicos do documento, como nome e força de ataque:
+```console
+> db.pokemon.findOne({}, { name: true, attack: true, _id: false })
+```
+
+**Operadores de comparação**
+
+[Documentação dos operadores de comparação](https://www.mongodb.com/docs/manual/reference/operator/query-comparison/)
+
+| Nome do operador | Descrição da comparação |
+| -------- | --------- |
+| $eq  | Igual |
+| $gt  | Maior |
+| $gte | Maior ou igual |
+| $in | No array |
+| $lt | Menor |
+| $lte | Menor ou igual |
+| $ne | Diferente |
+| $nin | Fora do array |
+
+**Exemplos:**
+
+Retornar pokemons com ataque **maior ou igual** a 85:
+```console
+> db.pokemon.find({attack: {$gte: 85} }, { name: true, attack: true, _id: false })
+```
+
+Retornar pokemons com ataque **menor ou igual** a 85:
+```console
+> db.pokemon.find({attack: {$lte: 85} }, { name: true, attack: true, _id: false })
+```
+
+Retornar pokemons que **tenham** os tipos fogo ou pedra:
+```console
+> db.pokemon.find({types: { $in: ["Fire", "Rock"] }}, {name: 1, types: 1, _id: 0})
+```
+
+Retornar pokemons que **não tenham** os tipos fogo ou pedra:
+```console
+> db.pokemon.find({types: { $nin: ["Fire", "Rock"] }}, {name: 1, types: 1, _id: 0})
 ```
