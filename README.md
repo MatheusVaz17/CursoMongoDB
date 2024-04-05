@@ -540,7 +540,7 @@ Ao realizar uma consulta no banco, quando não há indexação é verificado doc
 > Aggregation é semelhante aos Joins de banco relacional, é utilizado para combinar os dados de documentos, imagine que você possui uma collection ***combats*** que guarda o combate entre
 > dois pokemons, porém guarda apenas o id dos dois pokemons e o id do pokemon vencedor, por exemplo:
 
-```JSON
+```JS
 {
     First_pokemon: 702,
     Second_pokemon: 701,
@@ -550,7 +550,7 @@ Ao realizar uma consulta no banco, quando não há indexação é verificado doc
 
 Note que o First_pokemon e Second_pokemon se referem ao id dos pokemons da collection ***pokemon***, podemos retornar as informações do primeiro pokemon utilizando o $lookup:
 
-```JSON
+```JS
 db.combats.aggregate([
     {
 		$lookup: {
@@ -573,7 +573,7 @@ db.$collection.aggregate:
 
 Resultado da pesquisa de aggregation:
 
-```JSON
+```JS
 {
     First_pokemon: 702,
     Second_pokemon: 701,
@@ -599,7 +599,7 @@ Resultado da pesquisa de aggregation:
 
 Também é possível buscar os dados do segundo pokemon:
 
-```JSON
+```JS
 db.combats.aggregate([
     {
 		$lookup: {
@@ -622,7 +622,7 @@ db.combats.aggregate([
 
 Resultado:
 
-```JSON
+```JS
 {
     First_pokemon: 702,
     Second_pokemon: 701,
@@ -666,7 +666,7 @@ Resultado:
 
 É possível utilizar $project para definir quais informações quer que sejam retornadas, para que não retorne todas as informações, por exemplo, retornar apenas as informações do primeiro pokemon:
 
-```JSON
+```JS
 db.combats.aggregate([
     {
 		$lookup: {
@@ -698,7 +698,7 @@ db.combats.aggregate([
 
 É possível utilizar $cond para definir uma condição para o retorno dos dados, nesse caso podemos utilizar o cond juntamente com o project para retornar apenas o pokemon vencedor:
 
-```JSON
+```JS
 db.combats.aggregate([
     {
 		$lookup: {
